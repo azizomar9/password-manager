@@ -1,6 +1,5 @@
 import unittest
-from main import hash_master_password
-from main import user_password_check
+from main import *
 
 #testing hashing master password function
 class TestMain(unittest.TestCase):
