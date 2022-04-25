@@ -30,6 +30,7 @@ def hash_master_password(input):
     hash = hashlib.md5(input)
     hash = hash.hexdigest()
 
+    print(hash)
     return hash
 
 #function that will display only on the first use of the program which takes
@@ -166,34 +167,41 @@ def master_login():
     save = Button(text="Login master", command=check_master_password, width=36)
     save.grid(column=1, row=5, columnspan=2)
 
+def user_password_check(username, password):
+
+    if username != password:
+        return password
+
+
+
+
+
 #function that displays when a new password is to be added to the database and returns a password
 def new_password():
     for widget in window.winfo_children():
         widget.destroy()
 
-
     # function to make sure username and password are not the same for security reasons
-    def userPassCheck(username, password):
+    def user_pass_check(username, password):
         var = IntVar()
 
-        #loops until username and password aren't the same
+        # loops until username and password aren't the same
         while username == password:
             password_label = Label(text="Do not use the same username and password.", font=("Arial", 10, "bold"))
             password_label.grid(column=1, row=5, columnspan=2)
 
-            #button that waits until the button is clicked again before it retrieves the input data again
+            # button that waits until the button is clicked again before it retrieves the input data again
             save = Button(window, text="Save Password", command=lambda: var.set(1), width=36)
             save.grid(column=1, row=4, columnspan=2)
             save.wait_variable(var)
             password_entry.focus()
             password = password_entry.get()
 
-            #once username and password don't match, it will break out of the loop
+            # once username and password don't match, it will break out of the loop
             if username != password:
                 break;
 
-
-        return password
+            return password
 
     #function that runs once the save password button is clicked after a user inputs new information and stores all
     #the info in the database
@@ -204,7 +212,7 @@ def new_password():
         password = password_entry.get()
 
         # running function that checks whether username and password are the same and returns password
-        password = userPassCheck(username, password);
+        password = user_pass_check(username, password);
 
         insert_password = """INSERT INTO vault(website, username, password)
                           VALUES(?, ?, ?) """
