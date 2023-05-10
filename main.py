@@ -181,27 +181,7 @@ def new_password():
     for widget in window.winfo_children():
         widget.destroy()
 
-    # function to make sure username and password are not the same for security reasons
-    def user_pass_check(username, password):
-        var = IntVar()
 
-        # loops until username and password aren't the same
-        while username == password:
-            password_label = Label(text="Do not use the same username and password.", font=("Arial", 10, "bold"))
-            password_label.grid(column=1, row=5, columnspan=2)
-
-            # button that waits until the button is clicked again before it retrieves the input data again
-            save = Button(window, text="Save Password", command=lambda: var.set(1), width=36)
-            save.grid(column=1, row=4, columnspan=2)
-            save.wait_variable(var)
-            password_entry.focus()
-            password = password_entry.get()
-
-            # once username and password don't match, it will break out of the loop
-            if username != password:
-                break;
-
-            return password
 
     #function that runs once the save password button is clicked after a user inputs new information and stores all
     #the info in the database
@@ -212,7 +192,7 @@ def new_password():
         password = password_entry.get()
 
         # running function that checks whether username and password are the same and returns password
-        password = user_pass_check(username, password);
+
 
         insert_password = """INSERT INTO vault(website, username, password)
                           VALUES(?, ?, ?) """
@@ -253,7 +233,6 @@ def new_password():
     password_label.grid(column=0, row=3)
     password_entry = Entry(width=40)
     password_entry.grid(column=1, row=3, columnspan=2)
-
 
 
     save = Button(text="Save Password", command=button_clicked, width=36)
