@@ -122,8 +122,6 @@ def vault_screen():
                 cursor.execute(delete_query, (website, username, password))
                 db.commit()  # Commit the changes to the database
 
-            #messagebox.showinfo("Copied", f"Text '{text}' copied to clipboard!")
-
             #iterates through each value in the vault database and displays their information
             lbl1 = Label(window, text=(array[i][1]), font=("Helvetica", 12))
             lbl1.grid(column=0, row=(i + 3))
