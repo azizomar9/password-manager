@@ -109,6 +109,21 @@ def vault_screen():
             if (len(array) == 0):
                 break
 
+            def copy_to_clipboard(text):
+                window.clipboard_clear()
+                window.clipboard_append(text)
+                window.update()
+
+            def delete_entry(text1, text2, text3):
+                website = text1
+                username = text2
+                password = text3
+                delete_query = """DELETE FROM vault WHERE website=? AND username=? AND password=?"""
+                cursor.execute(delete_query, (website, username, password))
+                db.commit()  # Commit the changes to the database
+
+            #messagebox.showinfo("Copied", f"Text '{text}' copied to clipboard!")
+
             #iterates through each value in the vault database and displays their information
             lbl1 = Label(window, text=(array[i][1]), font=("Helvetica", 12))
             lbl1.grid(column=0, row=(i + 3))
@@ -116,6 +131,12 @@ def vault_screen():
             lbl2.grid(column=1, row=(i + 3))
             lbl3 = Label(window, text=(array[i][3]), font=("Helvetica", 12))
             lbl3.grid(column=2, row=(i + 3))
+
+            copy_btn = Button(window, text="Copy", command=lambda text=(array[i][3]): copy_to_clipboard(text))
+            copy_btn.grid(column=3, row=(i + 3))
+
+            delete_btn = Button(window, text="Delete", command=lambda text1=(array[i][1]),text2=(array[i][2]), text3=(array[i][3]) : delete_entry(text1, text2, text3))
+            delete_btn.grid(column=4, row=(i + 3))
 
             i = i + 1
 
@@ -137,11 +158,8 @@ def master_login():
 
         return cursor.fetchall()
 
-
     def check_master_password():
         match = get_master_password()
-
-
 
         if match:
             vault_screen()
@@ -150,6 +168,10 @@ def master_login():
             wrong_password_label = Label(text="Invalid Password. Try Again", font=("Arial", 12, "bold"))
             wrong_password_label.grid(column=1, row=6)
 
+    def on_enter_key(event):
+        check_master_password()
+
+    window.bind('<Return>', on_enter_key)
     window.title("Password Manager")
     window.config(padx=60, pady=60)
 
@@ -181,27 +203,6 @@ def new_password():
     for widget in window.winfo_children():
         widget.destroy()
 
-    # function to make sure username and password are not the same for security reasons
-    def user_pass_check(username, password):
-        var = IntVar()
-
-        # loops until username and password aren't the same
-        while username == password:
-            password_label = Label(text="Do not use the same username and password.", font=("Arial", 10, "bold"))
-            password_label.grid(column=1, row=5, columnspan=2)
-
-            # button that waits until the button is clicked again before it retrieves the input data again
-            save = Button(window, text="Save Password", command=lambda: var.set(1), width=36)
-            save.grid(column=1, row=4, columnspan=2)
-            save.wait_variable(var)
-            password_entry.focus()
-            password = password_entry.get()
-
-            # once username and password don't match, it will break out of the loop
-            if username != password:
-                break;
-
-            return password
 
     #function that runs once the save password button is clicked after a user inputs new information and stores all
     #the info in the database
@@ -212,7 +213,7 @@ def new_password():
         password = password_entry.get()
 
         # running function that checks whether username and password are the same and returns password
-        password = user_pass_check(username, password);
+
 
         insert_password = """INSERT INTO vault(website, username, password)
                           VALUES(?, ?, ?) """
@@ -230,9 +231,12 @@ def new_password():
 
         vault_screen()
 
+    def enter_key(event):
+        button_clicked()
 
     window.title("Password Manager")
-    window.config(padx=40, pady=40)
+    window.bind('<Return>', enter_key)
+    #window.config(padx=40, pady=40)
 
     canvas = Canvas(height=200, width=200)
     canvas.create_image(100, 100, image=logo_img)
@@ -255,14 +259,14 @@ def new_password():
     password_entry.grid(column=1, row=3, columnspan=2)
 
 
-
     save = Button(text="Save Password", command=button_clicked, width=36)
     save.grid(column=1, row=4, columnspan=2)
 
 
-#initialize the tkinter window
+#initialize the tkinter
 window = Tk()
 logo_img = PhotoImage(file="logo.png")
+
 
 #checks whether or not the database has an entry for master password and if it does it go straight to the login
 #if it doesn't then it will run the initial setup screen
